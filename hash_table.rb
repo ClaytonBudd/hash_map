@@ -1,4 +1,4 @@
-require 'linkedlist'
+require_relative 'linkedlist'
 
 class HashMap
   attr_accessor :table, :buckets, :capacity, :load_factor
@@ -21,34 +21,39 @@ class HashMap
 
   def set(key, value)
     hash = hash(key)
+    # need to add if key exists programming
+    list = LinkedList.new
+    list.add_node(key, value)
 
-    if @buckets[hash][0] == key
-      @buckets[hash][1]
-    else
-      (@buckets[hash] = [key, value])
-    end
+    @buckets[hash] = list
   end
 
   def get(key)
     hash = hash(key)
-    @buckets[hash][1]
+    @buckets[hash].find_value(key)
   end
 
   def key?(key)
     hash = hash(key)
-    @buckets[hash][0] == key
+    return false if @buckets[hash] == []
+    return false if @buckets[hash].find_value(key).nil?
+
+    true
   end
 
   def remove(key)
     hash = hash(key)
-    (@buckets[hash] = [])
-    @buckets
+    index = @buckets[hash].find_key_index(key)
+
+    @buckets[hash].remove_at(index)
   end
 
   def length
     count = 0
     @buckets.each do |each|
-      count += 1 unless each == []
+      next if each == []
+
+      count += each.size
     end
     count
   end
@@ -60,7 +65,9 @@ class HashMap
   def keys
     keys = []
     @buckets.each do |each|
-      keys.append(each[0]) if each != []
+      next if each == []
+
+      keys.append(each.to_array_key)
     end
     keys
   end
@@ -68,7 +75,9 @@ class HashMap
   def values
     values = []
     @buckets.each do |each|
-      values.append(each[1]) if each != []
+      next if each == []
+
+      values.append(each.to_array_value)
     end
     values
   end
@@ -76,24 +85,33 @@ class HashMap
   def entries
     entries = []
     @buckets.each do |each|
-      entries.append(each) if each != []
+      next if each == []
+
+      entries.append(each.to_array_entries)
     end
     entries
   end
+
+  # def entries
+  #   entries = []
+  #   @buckets.each do |each|
+  #     entries.append(each) if each != []
+  #   end
+  #   entries
+  # end
 end
 
 pipe = HashMap.new
-pipe.set('pipe', 'tool')
-pipe.set('car', 'transport')
-puts pipe.get('car')
-puts pipe.key?('car')
-puts pipe.key?('french')
-# pipe.remove('car')
-# puts pipe.key?('car')
-# puts "#{pipe.buckets}"
-# puts pipe.length
-# pipe.clear
-# puts "#{pipe.buckets}"
+pipe.set('beluga', 'whale')
+pipe.set('ebluga', 'whole')
+pipe.set('tripe', 'pipe')
+# pipe.set('beluga', 'not a whale')
+# puts 'get ' + "#{pipe.get('beluga')}"
+# puts 'key? t ' + "#{pipe.key?('beluga')}"
+# puts 'key? f ' + "#{pipe.key?('hard-fucking')}"
+# puts pipe.key?('french')
+puts "#{pipe.buckets}"
+puts pipe.length
 puts "#{pipe.keys}"
 puts "#{pipe.values}"
 puts "#{pipe.entries}"
