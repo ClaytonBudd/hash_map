@@ -2,110 +2,45 @@ class LinkedList
   attr_accessor :head
 
   def initialize
-    @head = Node.new('head')
+    @head = nil
   end
 
-  def append(value)
-    # add new node to end of list
-    current = @head
-    current = current.next_node until current.next_node.nil?
-    current.next_node = Node.new(value)
+  Node = Struct.new(:key, :value, :next_node)
+
+  def add_node(key, value)
+    @head = Node.new(key, value, @head)
   end
 
-  def prepend(value)
-    # add new node to start of list
-    current = @head
-    # find first node pointer
-    temp = current.next_node
-    # first node points to new_node(value,first_node_pointer)
-    current.next_node = Node.new(value, temp)
-  end
+  def find_value(key)
+    # returns index of node containing key or nil
+    return @head.value if @head.key == key
 
-  def size
-    # returns total number of nodes
-    count = 0
-    current = @head
-    until current.next_node.nil?
-      current = current.next_node
-      count += 1
-    end
-    count
-  end
-
-  attr_reader :head
-
-  def tail
-    current = @head
-    current = current.next_node until current.next_node.nil?
-    current
-  end
-
-  def at(index)
-    count = 0
-    current = @head
-    while count != index
-      current = current.next_node
-      count += 1
-    end
-    current
-  end
-
-  def pop
-    # removes last element of list
-    # find last element of list and make previous pointer = nil
-    current = @head
-    until current.next_node.nil?
-      previous = current
-      current = current.next_node
-    end
-    previous.next_node = nil
-  end
-
-  def contains(value)
-    # returns true if  value is in list otherwise false
-    current = @head
-    output = false
-    until current.next_node.nil?
-      current = current.next_node
-      output = true if current.value == value
-    end
-    output
-  end
-
-  def find(value)
-    # returns index of node containing value or nil
     current = @head
     index = 0
     until current.next_node.nil?
       current = current.next_node
       index += 1
-      return index if current.value == value || current.next_node.nil?
+      return index if current.key == key || current.next_node.nil?
     end
   end
 
-  def to_s
-    # ( value ) -> ( value ) -> ( value ) -> nil
+  def find_key_index(key)
+    # returns index of node containing key or nil
     current = @head
+    index = 0
+
+    return index if @head.key == key
+
     until current.next_node.nil?
       current = current.next_node
-      print "( #{current.value} ) -> "
+      index += 1
+      return index if current.key == key || current.next_node.nil?
     end
-    print 'nil' + "\n"
-  end
-
-  # extra credit
-  def insert_at(value, index)
-    current = @head
-    count = 0
-    while count != index
-      previous = current
-      current = current.next_node
-      count += 1
-    end
-    previous.next_node = Node.new(value, current)
   end
 
   def remove_at(index)
+    return @head = nil if @head.next_node.nil?
+
     current = @head
     count = 0
     while count != index
@@ -115,14 +50,52 @@ class LinkedList
     end
     previous.next_node = current.next_node
   end
-end
 
-class Node
-  attr_accessor :key, :value, :next_node
+  def size
+    # returns total number of nodes
+    count = 1
+    current = @head
+    until current.next_node.nil?
+      current = current.next_node
+      count += 1
+    end
+    count
+  end
 
-  def initialize(key, value, next_node = nil)
-    @key = key
-    @value = value
-    @next_node = next_node
+  def to_array_key
+    # ( value ) -> ( value ) -> ( value ) -> nil
+    keys = []
+    return keys.append(@head.key) if @head.next_node.nil?
+
+    current = @head
+    until current.next_node.nil?
+      current = current.next_node
+      keys.append(@head.key)
+    end
+    keys
+  end
+
+  def to_array_value
+    values = []
+    return values.append(@head.value) if @head.next_node.nil?
+
+    current = @head
+    until current.next_node.nil?
+      current = current.next_node
+      values.append(@head.value)
+    end
+    values
+  end
+
+  def to_array_entries
+    entries = []
+    return entries.append([@head.key, @head.value]) if @head.next_node.nil?
+
+    current = @head
+    until current.next_node.nil?
+      current = current.next_node
+      entries.append([@head.key, @head.value])
+    end
+    entries
   end
 end
